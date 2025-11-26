@@ -13,3 +13,6 @@ html, body {
     padding: 0px;
     background: url(/assets/images/background.webp);
 }
+header nav a.active {
+    background: rgba(255, 255, 255, 0.1);
+}
