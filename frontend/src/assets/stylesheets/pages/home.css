@@ -1,46 +1,117 @@
 body[location="home"] {
-  .intro_video img {
-    width: 100%;
-  }
-  .links {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 16px;
-    a {
-      background: rgb(0, 0, 0);
-      color: rgb(255, 255, 255);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 64px;
-      height: 64px;
-      border-radius: 999px;
-      span.name {
-        display: none;
-      }
-    }
-  }
-  .posts {
-    display: flex;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+  color: #222;
+}
+
+/* 3-Column wrapper */
+body[location="home"] .home-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Each column gets exactly 33% */
+body[location="home"] .home-grid > * {
+  width: 33%;
+}
+
+/* -------- IMAGE COLUMN -------- */
+body[location="home"] .intro_video {
+  display: flex;
+  justify-content: center;
+}
+
+body[location="home"] .intro_video img {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* -------- LINKS COLUMN -------- */
+body[location="home"] .links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+}
+
+body[location="home"] .links a {
+  background: black;
+  color: white;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: background 0.2s, transform 0.2s;
+}
+
+body[location="home"] .links a span.name {
+  display: none;
+}
+
+body[location="home"] .links a:hover {
+  background: #333;
+  transform: translateY(-3px);
+}
+
+/* -------- POSTS COLUMN -------- */
+body[location="home"] .posts {
+  width: 100%;
+}
+
+body[location="home"] .posts h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+body[location="home"] .posts .post_item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  color: #111;
+  text-decoration: none;
+}
+
+body[location="home"] .posts .post_item:last-child {
+  border-bottom: none;
+}
+
+body[location="home"] .posts .post_item .date {
+  font-size: 0.9rem;
+  color: #666;
+  min-width: 95px;
+}
+
+body[location="home"] .posts .post_item .name {
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+body[location="home"] .posts .post_item:hover .name {
+  color: #0056d6;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  body[location="home"] .home-grid {
     flex-direction: column;
-    gap: 12px;
-    .post_item {
-      display: flex;
-      flex-direction: row;
-      color: rgb(0, 0, 0);
-      text-decoration: none;
-      gap: 8px;
-      .name {
-        order: 2;
-        font-weight: 600;
-      }
-      .date {
-        order: 1;
-      }
-      &:hover {
-        text-decoration: underline;
-      }
-    }
+  }
+
+  body[location="home"] .home-grid > * {
+    width: 100%;
   }
 }

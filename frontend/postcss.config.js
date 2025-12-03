@@ -7,5 +7,7 @@ export default {
         "nesting-rules": true, // enables CSS Nesting
       },
     },
+    "@tailwindcss/vite": {},
+    autoprefixer: {},
   },
 };

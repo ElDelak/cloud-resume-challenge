@@ -8,6 +8,7 @@ import "css/default.css";
 function Layout() {
   const location = useLocation();
   const path = location.pathname;
+  const isHomepage = location.pathname === "/";
 
   let pageName = "";
   useEffect(() => {
@@ -35,7 +36,7 @@ function Layout() {
       <Header></Header>
       <div className="content_wrap">
         <div className="content">
-          <article>
+          <article className={isHomepage ? 'tailwind-scope' : ''}>
             <Outlet />
           </article>
         </div>

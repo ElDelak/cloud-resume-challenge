@@ -1,5 +1,18 @@
 @import "./breakpoints.css";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.home-scope {
+  @apply block;
+}
+
+.home-scope * {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+}
+
 * {
   box-sizing: border-box;
   font-family: Verdana, Geneva, Tahoma, sans-serif;

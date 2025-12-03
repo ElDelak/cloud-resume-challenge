@@ -1,0 +1,30 @@
+---
+- name: Deploy CloudFormation stack
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    template_path: "{{ (playbook_dir, '..', 'frontend.yaml') | path_join | realpath }}"
+    cfn_parameters:
+      BucketName: 'andrewbrownresume.com'
+      ACMCertificateArn: 'arn:aws:acm:us-east-1:982383527471:certificate/68327ec9-6695-4366-87d5-8aae35176daa'
+  vars_files:
+    - vaults/prod.yml
+  tasks:
+    - name: Deploy or Update stack
+      amazon.aws.cloudformation:
+        region: "{{ AWS_REGION }}"
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        stack_name: "{{ STACK_NAME }}"
+        state: present
+        template_body: "{{ lookup('file', template_path) }}"
+        template_parameters: "{{ cfn_parameters }}"
+        capabilities:
+          - CAPABILITY_NAMED_IAM
+          - CAPABILITY_AUTO_EXPAND
+        on_create_failure : DO_NOTHING
+      register: cfn_result
+    - name: Show stack outputs
+      debug:
+        var: cfn_result.stack_outputs
