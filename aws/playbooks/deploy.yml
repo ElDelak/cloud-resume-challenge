@@ -5,11 +5,13 @@
   gather_facts: false
   vars:
     template_path: "{{ (playbook_dir, '..', 'frontend.yaml') | path_join | realpath }}"
+    project_root: "{{ playbook_dir | realpath }}/../.."
+    frontend_dir: "{{ project_root }}/frontend"
+    build_dir: "{{ frontend_dir }}/dist"
+    bucket_name: "www.mabrouk-engineering.com"
     cfn_parameters:
-      BucketName: 'andrewbrownresume.com'
-      ACMCertificateArn: 'arn:aws:acm:us-east-1:982383527471:certificate/68327ec9-6695-4366-87d5-8aae35176daa'
-  vars_files:
-    - vaults/prod.yml
+      BucketName: "mabrouk-engineering.com"
+      ACMCertificateArn: "arn:aws:acm:us-east-1:806321741962:certificate/48e51d09-fdc5-4ea2-b3f3-06572370c017"
   tasks:
     - name: Deploy or Update stack
       amazon.aws.cloudformation:
@@ -23,7 +25,7 @@
         capabilities:
           - CAPABILITY_NAMED_IAM
           - CAPABILITY_AUTO_EXPAND
-        on_create_failure : DO_NOTHING
+        on_create_failure: DO_NOTHING
       register: cfn_result
     - name: Show stack outputs
       debug:
