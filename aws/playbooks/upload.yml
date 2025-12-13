@@ -10,7 +10,7 @@
     project_root: "{{ playbook_dir | realpath }}/../.."
     frontend_dir: "{{ project_root }}/frontend"
     build_dir: "{{ frontend_dir }}/dist"
-    cloudfront_distribution_id: E2H71L1QW3AJQM
+    cloudfront_distribution_id: E1J09GJLNKQ1UV
 
   tasks:
     - name: Install Node dependencies (clean, reproducible)
