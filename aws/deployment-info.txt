@@ -2,7 +2,7 @@ Deployment Information
 =====================
 Stack Name: counter-app
 Region: us-east-1
-Deployed At: 2025-12-26T22:55:04Z
+Deployed At: 2025-12-27T18:48:51Z
 
 SAM Deploy Output:
 
@@ -33,83 +33,95 @@ CloudFormation stack changeset
 -------------------------------------------------------------------------------------------------
 Operation                LogicalResourceId        ResourceType             Replacement            
 -------------------------------------------------------------------------------------------------
-+ Add                    CounterFunctionDecreme   AWS::Lambda::Permissio   N/A                    
+* Modify                 Api                      AWS::ApiGatewayV2::Api   False                  
+* Modify                 CounterFunctionDecreme   AWS::Lambda::Permissio   True                   
                          ntCounterPermission      n                                               
-+ Add                    CounterFunctionGetCoun   AWS::Lambda::Permissio   N/A                    
+* Modify                 CounterFunctionGetCoun   AWS::Lambda::Permissio   True                   
                          terPermission            n                                               
-+ Add                    CounterFunctionIncreme   AWS::Lambda::Permissio   N/A                    
+* Modify                 CounterFunctionIncreme   AWS::Lambda::Permissio   True                   
                          ntCounterPermission      n                                               
-+ Add                    CounterFunctionResetCo   AWS::Lambda::Permissio   N/A                    
+* Modify                 CounterFunctionResetCo   AWS::Lambda::Permissio   True                   
                          unterPermission          n                                               
-+ Add                    CounterFunctionRole      AWS::IAM::Role           N/A                    
-+ Add                    CounterFunction          AWS::Lambda::Function    N/A                    
-+ Add                    CounterTable             AWS::DynamoDB::Table     N/A                    
-+ Add                    ServerlessHttpApiApiGa   AWS::ApiGatewayV2::Sta   N/A                    
+- Delete                 ServerlessHttpApiApiGa   AWS::ApiGatewayV2::Sta   N/A                    
                          tewayDefaultStage        ge                                              
-+ Add                    ServerlessHttpApi        AWS::ApiGatewayV2::Api   N/A                    
+- Delete                 ServerlessHttpApi        AWS::ApiGatewayV2::Api   N/A                    
 -------------------------------------------------------------------------------------------------
 
 
-Changeset created successfully. arn:aws:cloudformation:us-east-1:806321741962:changeSet/samcli-deploy1766789712/9612e1df-659e-4027-a2a4-572c292ddec0
+Changeset created successfully. arn:aws:cloudformation:us-east-1:806321741962:changeSet/samcli-deploy1766861336/52e9ba3a-5d22-45d9-baa9-e5eafad4a312
 
 
-2025-12-26 17:55:18 - Waiting for stack create/update to complete
+2025-12-27 13:49:07 - Waiting for stack create/update to complete
 
 CloudFormation events from stack operations (refresh every 5.0 seconds)
 -------------------------------------------------------------------------------------------------
 ResourceStatus           ResourceType             LogicalResourceId        ResourceStatusReason   
 -------------------------------------------------------------------------------------------------
-CREATE_IN_PROGRESS       AWS::CloudFormation::S   counter-app              User Initiated         
+UPDATE_IN_PROGRESS       AWS::CloudFormation::S   counter-app              User Initiated         
                          tack                                                                     
-CREATE_IN_PROGRESS       AWS::DynamoDB::Table     CounterTable             -                      
-CREATE_IN_PROGRESS       AWS::DynamoDB::Table     CounterTable             Resource creation      
-                                                                           Initiated              
-CREATE_COMPLETE          AWS::DynamoDB::Table     CounterTable             -                      
-CREATE_IN_PROGRESS       AWS::IAM::Role           CounterFunctionRole      -                      
-CREATE_IN_PROGRESS       AWS::IAM::Role           CounterFunctionRole      Resource creation      
-                                                                           Initiated              
-CREATE_COMPLETE          AWS::IAM::Role           CounterFunctionRole      -                      
-CREATE_IN_PROGRESS       AWS::Lambda::Function    CounterFunction          -                      
-CREATE_IN_PROGRESS       AWS::Lambda::Function    CounterFunction          Resource creation      
-                                                                           Initiated              
-CREATE_IN_PROGRESS -     AWS::Lambda::Function    CounterFunction          Eventual consistency   
-CONFIGURATION_COMPLETE                                                     check initiated        
-CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
-CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ServerlessHttpApi        Resource creation      
-                                                                           Initiated              
-CREATE_COMPLETE          AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
-                         n                        unterPermission                                 
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
-                         n                        ntCounterPermission                             
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
-                         n                        ntCounterPermission                             
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
-                         n                        terPermission                                   
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Resource creation      
+UPDATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   Api                      -                      
+UPDATE_COMPLETE          AWS::ApiGatewayV2::Api   Api                      -                      
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Requested update       
+                         n                        ntCounterPermission      requires the creation  
+                                                                           of a new physical      
+                                                                           resource; hence        
+                                                                           creating one.          
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Requested update       
+                         n                        terPermission            requires the creation  
+                                                                           of a new physical      
+                                                                           resource; hence        
+                                                                           creating one.          
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Requested update       
+                         n                        unterPermission          requires the creation  
+                                                                           of a new physical      
+                                                                           resource; hence        
+                                                                           creating one.          
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Requested update       
+                         n                        ntCounterPermission      requires the creation  
+                                                                           of a new physical      
+                                                                           resource; hence        
+                                                                           creating one.          
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Resource creation      
                          n                        ntCounterPermission      Initiated              
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Resource creation      
-                         n                        ntCounterPermission      Initiated              
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Resource creation      
-                         n                        unterPermission          Initiated              
-CREATE_COMPLETE          AWS::Lambda::Function    CounterFunction          -                      
-CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Resource creation      
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Resource creation      
                          n                        terPermission            Initiated              
-CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Resource creation      
+                         n                        ntCounterPermission      Initiated              
+UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Resource creation      
+                         n                        unterPermission          Initiated              
+UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
                          n                        ntCounterPermission                             
-CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
-                         n                        ntCounterPermission                             
-CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
-                         ge                       tewayDefaultStage                               
-CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
-                         n                        unterPermission                                 
-CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
                          n                        terPermission                                   
-CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   Resource creation      
-                         ge                       tewayDefaultStage        Initiated              
-CREATE_COMPLETE          AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
+UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+                         n                        ntCounterPermission                             
+UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+                         n                        unterPermission                                 
+UPDATE_COMPLETE_CLEANU   AWS::CloudFormation::S   counter-app              -                      
+P_IN_PROGRESS            tack                                                                     
+DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+                         n                        unterPermission                                 
+DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+                         n                        ntCounterPermission                             
+DELETE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
                          ge                       tewayDefaultStage                               
-CREATE_COMPLETE          AWS::CloudFormation::S   counter-app              -                      
+DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+                         n                        terPermission                                   
+DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
+                         n                        ntCounterPermission                             
+DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+                         n                        ntCounterPermission                             
+DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
+                         n                        ntCounterPermission                             
+DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+                         n                        unterPermission                                 
+DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+                         n                        terPermission                                   
+DELETE_COMPLETE          AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
+                         ge                       tewayDefaultStage                               
+DELETE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
+DELETE_COMPLETE          AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
+UPDATE_COMPLETE          AWS::CloudFormation::S   counter-app              -                      
                          tack                                                                     
 -------------------------------------------------------------------------------------------------
 
@@ -117,9 +129,13 @@ CloudFormation outputs from deployed stack
 -------------------------------------------------------------------------------------------------
 Outputs                                                                                         
 -------------------------------------------------------------------------------------------------
+Key                 CustomDomainEndpoint                                                        
+Description         Custom domain endpoint URL                                                  
+Value               https://api-counter.mabrouk-engineering.com                                 
+
 Key                 ApiEndpoint                                                                 
 Description         HTTP API endpoint URL                                                       
-Value               https://aljzk7vxo6.execute-api.us-east-1.amazonaws.com                      
+Value               https://z1rwc686hk.execute-api.us-east-1.amazonaws.com                      
 
 Key                 CounterTableName                                                            
 Description         DynamoDB table name                                                         

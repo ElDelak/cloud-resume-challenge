@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Counter application using DynamoDB, Lambda, and API Gateway
 
@@ -11,6 +11,29 @@ Globals:
         TABLE_NAME: !Ref CounterTable
 
 Resources:
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - https://www.mabrouk-engineering.com
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+      DisableExecuteApiEndpoint: true
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 5
+        ThrottlingRateLimit: 10
+      Domain:
+        DomainName: api-counter.mabrouk-engineering.com
+        CertificateArn: arn:aws:acm:us-east-1:806321741962:certificate/6c3675c7-da75-4533-8130-41860bcddceb
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId: Z0173812Y53L6HX55BC
+
   # DynamoDB Table
   CounterTable:
     Type: AWS::DynamoDB::Table
@@ -37,28 +60,36 @@ Resources:
         GetCounter:
           Type: HttpApi
           Properties:
-            Path: /counter/{id}
+            ApiId: !Ref Api
+            Path: /counter
             Method: GET
         IncrementCounter:
           Type: HttpApi
           Properties:
-            Path: /counter/{id}/increment
+            ApiId: !Ref Api
+            Path: /counter/increment
             Method: POST
         DecrementCounter:
           Type: HttpApi
           Properties:
-            Path: /counter/{id}/decrement
+            ApiId: !Ref Api
+            Path: /counter/decrement
             Method: POST
         ResetCounter:
           Type: HttpApi
           Properties:
-            Path: /counter/{id}/reset
+            ApiId: !Ref Api
+            Path: /counter/reset
             Method: POST
 
 Outputs:
   ApiEndpoint:
     Description: HTTP API endpoint URL
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com"
+  
+  CustomDomainEndpoint:
+    Description: Custom domain endpoint URL
+    Value: "https://api-counter.mabrouk-engineering.com"
   
   CounterTableName:
     Description: DynamoDB table name

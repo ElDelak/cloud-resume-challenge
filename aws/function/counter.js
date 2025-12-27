@@ -8,37 +8,41 @@ const {
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 const TABLE_NAME = process.env.TABLE_NAME;
+const COUNTER_ID = "page-views"; // Fixed counter ID
 
 exports.handler = async (event) => {
   console.log("Event:", JSON.stringify(event, null, 2));
 
-  const counterId = event.pathParameters?.id;
   const path = event.rawPath || event.requestContext?.http?.path;
-
-  if (!counterId) {
-    return {
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: "Counter ID is required" }),
-    };
-  }
 
   try {
     // Determine operation based on path
-    if (path.endsWith("/increment")) {
-      return await incrementCounter(counterId);
-    } else if (path.endsWith("/decrement")) {
-      return await decrementCounter(counterId);
-    } else if (path.endsWith("/reset")) {
-      return await resetCounter(counterId);
+    if (path === "/counter/increment") {
+      return await incrementCounter();
+    } else if (path === "/counter/decrement") {
+      return await decrementCounter();
+    } else if (path === "/counter/reset") {
+      return await resetCounter();
+    } else if (path === "/counter") {
+      return await getCounter();
     } else {
-      return await getCounter(counterId);
+      return {
+        statusCode: 404,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ error: "Not found" }),
+      };
     }
   } catch (error) {
     console.error("Error:", error);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
       body: JSON.stringify({
         error: "Internal server error",
         message: error.message,
@@ -47,33 +51,30 @@ exports.handler = async (event) => {
   }
 };
 
-async function getCounter(id) {
+async function getCounter() {
   const command = new GetCommand({
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: { id: COUNTER_ID },
   });
 
   const response = await docClient.send(command);
 
-  if (!response.Item) {
-    return {
-      statusCode: 404,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: "Counter not found" }),
-    };
-  }
+  const count = response.Item?.count || 0;
 
   return {
     statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(response.Item),
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({ count }),
   };
 }
 
-async function incrementCounter(id) {
+async function incrementCounter() {
   const command = new UpdateCommand({
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: { id: COUNTER_ID },
     UpdateExpression: "SET #count = if_not_exists(#count, :start) + :increment",
     ExpressionAttributeNames: {
       "#count": "count",
@@ -89,15 +90,18 @@ async function incrementCounter(id) {
 
   return {
     statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(response.Attributes),
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({ count: response.Attributes.count }),
   };
 }
 
-async function decrementCounter(id) {
+async function decrementCounter() {
   const command = new UpdateCommand({
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: { id: COUNTER_ID },
     UpdateExpression: "SET #count = if_not_exists(#count, :start) - :decrement",
     ExpressionAttributeNames: {
       "#count": "count",
@@ -113,15 +117,18 @@ async function decrementCounter(id) {
 
   return {
     statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(response.Attributes),
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({ count: response.Attributes.count }),
   };
 }
 
-async function resetCounter(id) {
+async function resetCounter() {
   const command = new UpdateCommand({
     TableName: TABLE_NAME,
-    Key: { id },
+    Key: { id: COUNTER_ID },
     UpdateExpression: "SET #count = :zero",
     ExpressionAttributeNames: {
       "#count": "count",
@@ -136,7 +143,10 @@ async function resetCounter(id) {
 
   return {
     statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(response.Attributes),
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({ count: response.Attributes.count }),
   };
 }

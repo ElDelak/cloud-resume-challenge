@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+curl https://api-counter.mabrouk-engineering.com/counter/increment -X POST 
