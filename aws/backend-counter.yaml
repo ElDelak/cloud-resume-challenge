@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Counter application using DynamoDB, Lambda, and API Gateway
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: nodejs20.x
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref CounterTable
+
+Resources:
+  # DynamoDB Table
+  CounterTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: counter-table
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  # Lambda Function for Counter Operations
+  CounterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./function
+      Handler: counter.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CounterTable
+      Events:
+        GetCounter:
+          Type: HttpApi
+          Properties:
+            Path: /counter/{id}
+            Method: GET
+        IncrementCounter:
+          Type: HttpApi
+          Properties:
+            Path: /counter/{id}/increment
+            Method: POST
+        DecrementCounter:
+          Type: HttpApi
+          Properties:
+            Path: /counter/{id}/decrement
+            Method: POST
+        ResetCounter:
+          Type: HttpApi
+          Properties:
+            Path: /counter/{id}/reset
+            Method: POST
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API endpoint URL
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  
+  CounterTableName:
+    Description: DynamoDB table name
+    Value: !Ref CounterTable

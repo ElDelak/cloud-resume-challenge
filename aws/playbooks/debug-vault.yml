@@ -1,0 +1,38 @@
+---
+- name: Debug AWS Vault Credentials
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - vaults/prod.yml
+
+  tasks:
+    - name: Display available variables (masked)
+      debug:
+        msg:
+          - "Variables loaded from vault:"
+          - "AWS_REGION defined: {{ AWS_REGION is defined }}"
+          - "AWS_ACCESS_KEY_ID defined: {{ AWS_ACCESS_KEY_ID is defined }}"
+          - "AWS_SECRET_ACCESS_KEY defined: {{ AWS_SECRET_ACCESS_KEY is defined }}"
+          - "AWS_REGION value: {{ AWS_REGION | default('NOT FOUND') }}"
+
+    - name: Show all variable names from vault
+      debug:
+        msg: "{{ vars.keys() | select('match', '^AWS.*') | list }}"
+
+    - name: Test AWS CLI with credentials
+      shell: |
+        export AWS_ACCESS_KEY_ID="{{ AWS_ACCESS_KEY_ID }}"
+        export AWS_SECRET_ACCESS_KEY="{{ AWS_SECRET_ACCESS_KEY }}"
+        export AWS_DEFAULT_REGION="{{ AWS_REGION }}"
+        aws sts get-caller-identity 2>&1
+      register: aws_test
+      ignore_errors: yes
+
+    - name: Display AWS CLI test result
+      debug:
+        msg:
+          - "Return code: {{ aws_test.rc }}"
+          - "Output: {{ aws_test.stdout }}"
+          - "Key starts with: {{ AWS_ACCESS_KEY_ID[:4] if AWS_ACCESS_KEY_ID is defined else 'NOT DEFINED' }}"

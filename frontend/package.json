@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build_aws": "vite build --mode aws",
+    "build_azure": "vite build --mode azure",
+    "build_gcp": "vite build --mode gcp",
     "lint": "eslint .",
     "preview": "vite preview"
   },

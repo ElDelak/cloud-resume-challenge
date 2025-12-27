@@ -21,23 +21,6 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         #ErrorDocument: error.html
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref WwwBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: AllowCloudFrontServicePrincipalReadOnly
-            Effect: Allow
-            Principal:
-              Service: cloudfront.amazonaws.com
-            Action:
-              - s3:GetObject
-            Resource: !Sub arn:${AWS::Partition}:s3:::www.${BucketName}/*
-            Condition:
-              StringEquals:
-                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
   OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
@@ -112,3 +95,20 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
         HttpVersion: http2and3
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WwwBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipalReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action:
+              - s3:GetObject
+            Resource: !Sub arn:${AWS::Partition}:s3:::www.${BucketName}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}

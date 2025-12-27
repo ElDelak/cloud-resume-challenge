@@ -1,0 +1,130 @@
+Deployment Information
+=====================
+Stack Name: counter-app
+Region: us-east-1
+Deployed At: 2025-12-26T22:55:04Z
+
+SAM Deploy Output:
+
+	Managed S3 bucket: aws-sam-cli-managed-default-samclisourcebucket-jtvdra38opyy
+	Auto resolution of buckets can be turned off by setting resolve_s3=False
+	To use a specific S3 bucket, set --s3-bucket=<bucket_name>
+	Above settings can be stored in samconfig.toml
+
+	Deploying with following values
+	===============================
+	Stack name                   : counter-app
+	Region                       : us-east-1
+	Confirm changeset            : False
+	Disable rollback             : False
+	Deployment s3 bucket         : aws-sam-cli-managed-default-samclisourcebucket-jtvdra38opyy
+	Capabilities                 : ["CAPABILITY_IAM"]
+	Parameter overrides          : {}
+	Signing Profiles             : {}
+
+Initiating deployment
+=====================
+
+
+
+Waiting for changeset to be created..
+
+CloudFormation stack changeset
+-------------------------------------------------------------------------------------------------
+Operation                LogicalResourceId        ResourceType             Replacement            
+-------------------------------------------------------------------------------------------------
++ Add                    CounterFunctionDecreme   AWS::Lambda::Permissio   N/A                    
+                         ntCounterPermission      n                                               
++ Add                    CounterFunctionGetCoun   AWS::Lambda::Permissio   N/A                    
+                         terPermission            n                                               
++ Add                    CounterFunctionIncreme   AWS::Lambda::Permissio   N/A                    
+                         ntCounterPermission      n                                               
++ Add                    CounterFunctionResetCo   AWS::Lambda::Permissio   N/A                    
+                         unterPermission          n                                               
++ Add                    CounterFunctionRole      AWS::IAM::Role           N/A                    
++ Add                    CounterFunction          AWS::Lambda::Function    N/A                    
++ Add                    CounterTable             AWS::DynamoDB::Table     N/A                    
++ Add                    ServerlessHttpApiApiGa   AWS::ApiGatewayV2::Sta   N/A                    
+                         tewayDefaultStage        ge                                              
++ Add                    ServerlessHttpApi        AWS::ApiGatewayV2::Api   N/A                    
+-------------------------------------------------------------------------------------------------
+
+
+Changeset created successfully. arn:aws:cloudformation:us-east-1:806321741962:changeSet/samcli-deploy1766789712/9612e1df-659e-4027-a2a4-572c292ddec0
+
+
+2025-12-26 17:55:18 - Waiting for stack create/update to complete
+
+CloudFormation events from stack operations (refresh every 5.0 seconds)
+-------------------------------------------------------------------------------------------------
+ResourceStatus           ResourceType             LogicalResourceId        ResourceStatusReason   
+-------------------------------------------------------------------------------------------------
+CREATE_IN_PROGRESS       AWS::CloudFormation::S   counter-app              User Initiated         
+                         tack                                                                     
+CREATE_IN_PROGRESS       AWS::DynamoDB::Table     CounterTable             -                      
+CREATE_IN_PROGRESS       AWS::DynamoDB::Table     CounterTable             Resource creation      
+                                                                           Initiated              
+CREATE_COMPLETE          AWS::DynamoDB::Table     CounterTable             -                      
+CREATE_IN_PROGRESS       AWS::IAM::Role           CounterFunctionRole      -                      
+CREATE_IN_PROGRESS       AWS::IAM::Role           CounterFunctionRole      Resource creation      
+                                                                           Initiated              
+CREATE_COMPLETE          AWS::IAM::Role           CounterFunctionRole      -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Function    CounterFunction          -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Function    CounterFunction          Resource creation      
+                                                                           Initiated              
+CREATE_IN_PROGRESS -     AWS::Lambda::Function    CounterFunction          Eventual consistency   
+CONFIGURATION_COMPLETE                                                     check initiated        
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ServerlessHttpApi        Resource creation      
+                                                                           Initiated              
+CREATE_COMPLETE          AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+                         n                        unterPermission                                 
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+                         n                        ntCounterPermission                             
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
+                         n                        ntCounterPermission                             
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+                         n                        terPermission                                   
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Resource creation      
+                         n                        ntCounterPermission      Initiated              
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Resource creation      
+                         n                        ntCounterPermission      Initiated              
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Resource creation      
+                         n                        unterPermission          Initiated              
+CREATE_COMPLETE          AWS::Lambda::Function    CounterFunction          -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Resource creation      
+                         n                        terPermission            Initiated              
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+                         n                        ntCounterPermission                             
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
+                         n                        ntCounterPermission                             
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
+                         ge                       tewayDefaultStage                               
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+                         n                        unterPermission                                 
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+                         n                        terPermission                                   
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   Resource creation      
+                         ge                       tewayDefaultStage        Initiated              
+CREATE_COMPLETE          AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
+                         ge                       tewayDefaultStage                               
+CREATE_COMPLETE          AWS::CloudFormation::S   counter-app              -                      
+                         tack                                                                     
+-------------------------------------------------------------------------------------------------
+
+CloudFormation outputs from deployed stack
+-------------------------------------------------------------------------------------------------
+Outputs                                                                                         
+-------------------------------------------------------------------------------------------------
+Key                 ApiEndpoint                                                                 
+Description         HTTP API endpoint URL                                                       
+Value               https://aljzk7vxo6.execute-api.us-east-1.amazonaws.com                      
+
+Key                 CounterTableName                                                            
+Description         DynamoDB table name                                                         
+Value               counter-table                                                               
+-------------------------------------------------------------------------------------------------
+
+
+Successfully created/updated stack - counter-app in us-east-1

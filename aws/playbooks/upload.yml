@@ -3,15 +3,14 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  vars_files:
-    - vaults/prod.yml
   vars:
     bucket_name: "mabrouk-engineering.com"
     project_root: "{{ playbook_dir | realpath }}/../.."
     frontend_dir: "{{ project_root }}/frontend"
     build_dir: "{{ frontend_dir }}/dist"
     cloudfront_distribution_id: E1J09GJLNKQ1UV
-
+  vars_files:
+    - vaults/prod.yml
   tasks:
     - name: Install Node dependencies (clean, reproducible)
       community.general.npm:
@@ -19,7 +18,6 @@
         state: present
         production: false
         ci: true
-
     - name: Build Vite app
       shell: npm run build_aws
       args:

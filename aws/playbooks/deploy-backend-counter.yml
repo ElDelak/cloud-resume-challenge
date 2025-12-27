@@ -1,0 +1,148 @@
+---
+- name: Deploy AWS SAM Counter Application
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars:
+    stack_name: "counter-app"
+    function_dir: "{{ playbook_dir }}/../function"
+    sam_template: "{{ playbook_dir }}/../backend-counter.yaml"
+    vault_file: "vaults/prod.yml"
+
+  tasks:
+    - name: Check if vault file exists
+      stat:
+        path: "{{ vault_file }}"
+      register: vault_stat
+
+    - name: Fail if vault does not exist
+      fail:
+        msg: "Vault file '{{ vault_file }}' does not exist at path: {{ vault_stat.stat.path | default('unknown') }}"
+      when: not vault_stat.stat.exists
+
+    - name: Load variables from vault file
+      include_vars:
+        file: "{{ vault_file }}"
+
+    - name: Verify AWS variables are loaded
+      assert:
+        that:
+          - AWS_REGION is defined
+          - AWS_ACCESS_KEY_ID is defined
+          - AWS_SECRET_ACCESS_KEY is defined
+        fail_msg: "AWS credentials not found in vault. Please check that AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY are defined in {{ vault_file }}"
+
+    - name: Display loaded region (for verification)
+      debug:
+        msg: "Using AWS Region: {{ AWS_REGION }}"
+
+    - name: Check if SAM CLI is installed
+      command: sam --version
+      register: sam_version
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if SAM CLI is not installed
+      fail:
+        msg: "AWS SAM CLI is not installed. Please install it first."
+      when: sam_version.rc != 0
+
+    - name: Set AWS credentials as environment variables
+      set_fact:
+        aws_env:
+          AWS_ACCESS_KEY_ID: "{{ AWS_ACCESS_KEY_ID }}"
+          AWS_SECRET_ACCESS_KEY: "{{ AWS_SECRET_ACCESS_KEY }}"
+          AWS_DEFAULT_REGION: "{{ AWS_REGION }}"
+          SAM_CLI_TELEMETRY: "0"
+      no_log: true
+
+    - name: Check if function directory exists
+      stat:
+        path: "{{ function_dir }}"
+      register: function_dir_stat
+
+    - name: Fail if function directory does not exist
+      fail:
+        msg: "Function directory '{{ function_dir }}' does not exist"
+      when: not function_dir_stat.stat.exists
+
+    - name: Check if template.yaml exists
+      stat:
+        path: "{{ sam_template }}"
+      register: template_stat
+
+    - name: Fail if template.yaml does not exist
+      fail:
+        msg: "SAM template '{{ sam_template }}' does not exist"
+      when: not template_stat.stat.exists
+
+    - name: Check if package.json exists
+      stat:
+        path: "{{ function_dir }}/package.json"
+      register: package_stat
+
+    - name: Install npm dependencies
+      npm:
+        path: "{{ function_dir }}"
+      when: package_stat.stat.exists
+
+    - name: Build SAM application
+      command: sam build --template {{ sam_template }}
+      args:
+        chdir: ".."
+      environment: "{{ aws_env }}"
+      register: sam_build
+      changed_when: "'Build Succeeded' in sam_build.stdout"
+
+    - name: Display SAM build output
+      debug:
+        var: sam_build.stdout_lines
+
+    - name: Deploy SAM application
+      command: >
+        sam deploy
+        --stack-name {{ stack_name }}
+        --region {{ AWS_REGION }}
+        --capabilities CAPABILITY_IAM
+        --resolve-s3
+        --no-confirm-changeset
+        --no-fail-on-empty-changeset
+      args:
+        chdir: ".."
+      environment: "{{ aws_env }}"
+      register: sam_deploy
+      changed_when: "'Successfully created/updated stack' in sam_deploy.stderr or 'Successfully created/updated stack' in sam_deploy.stdout"
+
+    - name: Display SAM deploy output
+      debug:
+        var: sam_deploy.stdout_lines
+
+    - name: Display SAM deploy errors (if any)
+      debug:
+        var: sam_deploy.stderr_lines
+      when: sam_deploy.stderr_lines | length > 0
+
+    - name: Save deployment information to file
+      copy:
+        content: |
+          Deployment Information
+          =====================
+          Stack Name: {{ stack_name }}
+          Region: {{ AWS_REGION }}
+          Deployed At: {{ ansible_date_time.iso8601 }}
+
+          SAM Deploy Output:
+          {{ sam_deploy.stdout }}
+        dest: "../deployment-info.txt"
+
+    - name: Display success message
+      debug:
+        msg:
+          - "==================================================="
+          - "SAM application deployed successfully!"
+          - "Stack Name: {{ stack_name }}"
+          - "Region: {{ AWS_REGION }}"
+          - "Check deployment-info.txt for details"
+          - "Check AWS Console for API Gateway endpoint"
+          - "==================================================="
