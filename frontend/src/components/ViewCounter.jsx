@@ -11,7 +11,7 @@ export default function ViewCounter() {
   }, []);
 
   const increment = () => {
-    fetch(endpoint, { method: "POST" })
+    fetch(endpoint + "/increment", { method: "POST" })
       .then((res) => res.json())
       .then((data) => setCount(Number(data.count) || 0))
       .catch((err) => console.error("Error incrementing count:", err));

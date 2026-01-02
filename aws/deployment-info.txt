@@ -2,11 +2,13 @@ Deployment Information
 =====================
 Stack Name: counter-app
 Region: us-east-1
-Deployed At: 2025-12-27T18:48:51Z
+Deployed At: 2026-01-02T15:34:09Z
 
 SAM Deploy Output:
+	Creating the required resources...
+	Successfully created!
 
-	Managed S3 bucket: aws-sam-cli-managed-default-samclisourcebucket-jtvdra38opyy
+	Managed S3 bucket: aws-sam-cli-managed-default-samclisourcebucket-oi8fkvso9idi
 	Auto resolution of buckets can be turned off by setting resolve_s3=False
 	To use a specific S3 bucket, set --s3-bucket=<bucket_name>
 	Above settings can be stored in samconfig.toml
@@ -17,7 +19,7 @@ SAM Deploy Output:
 	Region                       : us-east-1
 	Confirm changeset            : False
 	Disable rollback             : False
-	Deployment s3 bucket         : aws-sam-cli-managed-default-samclisourcebucket-jtvdra38opyy
+	Deployment s3 bucket         : aws-sam-cli-managed-default-samclisourcebucket-oi8fkvso9idi
 	Capabilities                 : ["CAPABILITY_IAM"]
 	Parameter overrides          : {}
 	Signing Profiles             : {}
@@ -33,95 +35,109 @@ CloudFormation stack changeset
 -------------------------------------------------------------------------------------------------
 Operation                LogicalResourceId        ResourceType             Replacement            
 -------------------------------------------------------------------------------------------------
-* Modify                 Api                      AWS::ApiGatewayV2::Api   False                  
-* Modify                 CounterFunctionDecreme   AWS::Lambda::Permissio   True                   
++ Add                    ApiApiGatewayDefaultSt   AWS::ApiGatewayV2::Sta   N/A                    
+                         age                      ge                                              
++ Add                    ApiApiMapping            AWS::ApiGatewayV2::Api   N/A                    
+                                                  Mapping                                         
++ Add                    ApiGatewayDomainNameV2   AWS::ApiGatewayV2::Dom   N/A                    
+                         e7fd624e3e               ainName                                         
++ Add                    Api                      AWS::ApiGatewayV2::Api   N/A                    
++ Add                    CounterFunctionDecreme   AWS::Lambda::Permissio   N/A                    
                          ntCounterPermission      n                                               
-* Modify                 CounterFunctionGetCoun   AWS::Lambda::Permissio   True                   
++ Add                    CounterFunctionGetCoun   AWS::Lambda::Permissio   N/A                    
                          terPermission            n                                               
-* Modify                 CounterFunctionIncreme   AWS::Lambda::Permissio   True                   
++ Add                    CounterFunctionIncreme   AWS::Lambda::Permissio   N/A                    
                          ntCounterPermission      n                                               
-* Modify                 CounterFunctionResetCo   AWS::Lambda::Permissio   True                   
++ Add                    CounterFunctionResetCo   AWS::Lambda::Permissio   N/A                    
                          unterPermission          n                                               
-- Delete                 ServerlessHttpApiApiGa   AWS::ApiGatewayV2::Sta   N/A                    
-                         tewayDefaultStage        ge                                              
-- Delete                 ServerlessHttpApi        AWS::ApiGatewayV2::Api   N/A                    
++ Add                    CounterFunctionRole      AWS::IAM::Role           N/A                    
++ Add                    CounterFunction          AWS::Lambda::Function    N/A                    
++ Add                    CounterTable             AWS::DynamoDB::Table     N/A                    
++ Add                    RecordSetGroupd936960f   AWS::Route53::RecordSe   N/A                    
+                         78                       tGroup                                          
 -------------------------------------------------------------------------------------------------
 
 
-Changeset created successfully. arn:aws:cloudformation:us-east-1:806321741962:changeSet/samcli-deploy1766861336/52e9ba3a-5d22-45d9-baa9-e5eafad4a312
+Changeset created successfully. arn:aws:cloudformation:us-east-1:806321741962:changeSet/samcli-deploy1767368108/86d94e6a-0b8d-40db-8171-f129c96d24ed
 
 
-2025-12-27 13:49:07 - Waiting for stack create/update to complete
+2026-01-02 10:35:20 - Waiting for stack create/update to complete
 
 CloudFormation events from stack operations (refresh every 5.0 seconds)
 -------------------------------------------------------------------------------------------------
 ResourceStatus           ResourceType             LogicalResourceId        ResourceStatusReason   
 -------------------------------------------------------------------------------------------------
-UPDATE_IN_PROGRESS       AWS::CloudFormation::S   counter-app              User Initiated         
+CREATE_IN_PROGRESS       AWS::CloudFormation::S   counter-app              User Initiated         
                          tack                                                                     
-UPDATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   Api                      -                      
-UPDATE_COMPLETE          AWS::ApiGatewayV2::Api   Api                      -                      
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Requested update       
-                         n                        ntCounterPermission      requires the creation  
-                                                                           of a new physical      
-                                                                           resource; hence        
-                                                                           creating one.          
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Requested update       
-                         n                        terPermission            requires the creation  
-                                                                           of a new physical      
-                                                                           resource; hence        
-                                                                           creating one.          
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Requested update       
-                         n                        unterPermission          requires the creation  
-                                                                           of a new physical      
-                                                                           resource; hence        
-                                                                           creating one.          
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Requested update       
-                         n                        ntCounterPermission      requires the creation  
-                                                                           of a new physical      
-                                                                           resource; hence        
-                                                                           creating one.          
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Resource creation      
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Dom   ApiGatewayDomainNameV2   -                      
+                         ainName                  e7fd624e3e                                      
+CREATE_IN_PROGRESS       AWS::DynamoDB::Table     CounterTable             -                      
+CREATE_IN_PROGRESS       AWS::DynamoDB::Table     CounterTable             Resource creation      
+                                                                           Initiated              
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Dom   ApiGatewayDomainNameV2   Resource creation      
+                         ainName                  e7fd624e3e               Initiated              
+CREATE_IN_PROGRESS -     AWS::ApiGatewayV2::Dom   ApiGatewayDomainNameV2   Eventual consistency   
+CONFIGURATION_COMPLETE   ainName                  e7fd624e3e               check initiated        
+CREATE_COMPLETE          AWS::ApiGatewayV2::Dom   ApiGatewayDomainNameV2   -                      
+                         ainName                  e7fd624e3e                                      
+CREATE_IN_PROGRESS       AWS::Route53::RecordSe   RecordSetGroupd936960f   -                      
+                         tGroup                   78                                              
+CREATE_IN_PROGRESS       AWS::Route53::RecordSe   RecordSetGroupd936960f   Resource creation      
+                         tGroup                   78                       Initiated              
+CREATE_COMPLETE          AWS::DynamoDB::Table     CounterTable             -                      
+CREATE_IN_PROGRESS       AWS::IAM::Role           CounterFunctionRole      -                      
+CREATE_IN_PROGRESS       AWS::IAM::Role           CounterFunctionRole      Resource creation      
+                                                                           Initiated              
+CREATE_COMPLETE          AWS::IAM::Role           CounterFunctionRole      -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Function    CounterFunction          -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Function    CounterFunction          Resource creation      
+                                                                           Initiated              
+CREATE_IN_PROGRESS -     AWS::Lambda::Function    CounterFunction          Eventual consistency   
+CONFIGURATION_COMPLETE                                                     check initiated        
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   Api                      -                      
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   Api                      Resource creation      
+                                                                           Initiated              
+CREATE_COMPLETE          AWS::ApiGatewayV2::Api   Api                      -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
+                         n                        ntCounterPermission                             
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+                         n                        ntCounterPermission                             
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+                         n                        terPermission                                   
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+                         n                        unterPermission                                 
+CREATE_COMPLETE          AWS::Route53::RecordSe   RecordSetGroupd936960f   -                      
+                         tGroup                   78                                              
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   Resource creation      
                          n                        ntCounterPermission      Initiated              
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Resource creation      
-                         n                        terPermission            Initiated              
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Resource creation      
-                         n                        ntCounterPermission      Initiated              
-UPDATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Resource creation      
+CREATE_COMPLETE          AWS::Lambda::Function    CounterFunction          -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   Resource creation      
                          n                        unterPermission          Initiated              
-UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   Resource creation      
+                         n                        ntCounterPermission      Initiated              
+CREATE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   Resource creation      
+                         n                        terPermission            Initiated              
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ApiApiGatewayDefaultSt   -                      
+                         ge                       age                                             
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
                          n                        ntCounterPermission                             
-UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
-                         n                        terPermission                                   
-UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
-                         n                        ntCounterPermission                             
-UPDATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
                          n                        unterPermission                                 
-UPDATE_COMPLETE_CLEANU   AWS::CloudFormation::S   counter-app              -                      
-P_IN_PROGRESS            tack                                                                     
-DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
-                         n                        unterPermission                                 
-DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
                          n                        ntCounterPermission                             
-DELETE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
-                         ge                       tewayDefaultStage                               
-DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
+CREATE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
                          n                        terPermission                                   
-DELETE_IN_PROGRESS       AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
-                         n                        ntCounterPermission                             
-DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionIncreme   -                      
-                         n                        ntCounterPermission                             
-DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionDecreme   -                      
-                         n                        ntCounterPermission                             
-DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionResetCo   -                      
-                         n                        unterPermission                                 
-DELETE_COMPLETE          AWS::Lambda::Permissio   CounterFunctionGetCoun   -                      
-                         n                        terPermission                                   
-DELETE_COMPLETE          AWS::ApiGatewayV2::Sta   ServerlessHttpApiApiGa   -                      
-                         ge                       tewayDefaultStage                               
-DELETE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
-DELETE_COMPLETE          AWS::ApiGatewayV2::Api   ServerlessHttpApi        -                      
-UPDATE_COMPLETE          AWS::CloudFormation::S   counter-app              -                      
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Sta   ApiApiGatewayDefaultSt   Resource creation      
+                         ge                       age                      Initiated              
+CREATE_COMPLETE          AWS::ApiGatewayV2::Sta   ApiApiGatewayDefaultSt   -                      
+                         ge                       age                                             
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ApiApiMapping            -                      
+                         Mapping                                                                  
+CREATE_IN_PROGRESS       AWS::ApiGatewayV2::Api   ApiApiMapping            Resource creation      
+                         Mapping                                           Initiated              
+CREATE_COMPLETE          AWS::ApiGatewayV2::Api   ApiApiMapping            -                      
+                         Mapping                                                                  
+CREATE_COMPLETE          AWS::CloudFormation::S   counter-app              -                      
                          tack                                                                     
 -------------------------------------------------------------------------------------------------
 
@@ -135,7 +151,7 @@ Value               https://api-counter.mabrouk-engineering.com
 
 Key                 ApiEndpoint                                                                 
 Description         HTTP API endpoint URL                                                       
-Value               https://z1rwc686hk.execute-api.us-east-1.amazonaws.com                      
+Value               https://5lmulnbsv9.execute-api.us-east-1.amazonaws.com                      
 
 Key                 CounterTableName                                                            
 Description         DynamoDB table name                                                         
