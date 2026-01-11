@@ -8,11 +8,12 @@
     resource_group: cloud-resume-challenge
     location: eastus
     storage_account_name: mabroukresumechallenge09
-    container_name: $web
     bicep_file: "{{ playbook_dir }}/../main.bicep"
     built_json: "{{ playbook_dir }}/../main.built.json"
     deployment_name: "crc-deploy"
-
+    dns_zone_rg: cloud-resume-challenge
+    dns_zone_name: mabrouk-engineering.com
+    domain_fqdn: mabrouk-engineering.com
   tasks:
     - name: Debug Variables
       ansible.builtin.debug:
@@ -20,7 +21,6 @@
           - "Resource Group: {{ resource_group }}"
           - "Location: {{ location }}"
           - "Storage_Account_Name: {{ storage_account_name }}"
-          - "Container_Name: {{ container_name }}"
     - name: Verify Azure CLI login
       ansible.builtin.command: az account show
       register: az_account
@@ -35,7 +35,9 @@
         --parameters 
           location={{ location }} 
           name={{ storage_account_name }} 
-          container_name={{ container_name }} 
+          dns_zone_rg={{ dns_zone_rg }}
+          dns_zone_name={{ dns_zone_name }}
+          domain_fqdn={{ domain_fqdn }}
         --output json
       register: validate_out
       changed_when: false
@@ -49,7 +51,9 @@
         --parameters 
           location={{ location }} 
           name={{ storage_account_name }} 
-          container_name={{ container_name }} 
+          dns_zone_rg={{ dns_zone_rg }}
+          dns_zone_name={{ dns_zone_name }}
+          domain_fqdn={{ domain_fqdn }}
         --output json
       register: deployment_result
       failed_when: deployment_result.rc != 0
