@@ -1,0 +1,59 @@
+- name: Deploy Storage Account via Bicep
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - azure.azcollection
+  vars:
+    resource_group: cloud-resume-challenge
+    location: eastus
+    storage_account_name: mabroukresumechallenge09
+    container_name: $web
+    bicep_file: "{{ playbook_dir }}/../main.bicep"
+    built_json: "{{ playbook_dir }}/../main.built.json"
+    deployment_name: "crc-deploy"
+
+  tasks:
+    - name: Debug Variables
+      ansible.builtin.debug:
+        msg:
+          - "Resource Group: {{ resource_group }}"
+          - "Location: {{ location }}"
+          - "Storage_Account_Name: {{ storage_account_name }}"
+          - "Container_Name: {{ container_name }}"
+    - name: Verify Azure CLI login
+      ansible.builtin.command: az account show
+      register: az_account
+      changed_when: false
+      failed_when: az_account.rc != 0
+
+    - name: Validate Bicep template
+      ansible.builtin.command: >
+        az deployment group validate
+        --resource-group {{ resource_group }}
+        --template-file {{ bicep_file }}
+        --parameters 
+          location={{ location }} 
+          name={{ storage_account_name }} 
+          container_name={{ container_name }} 
+        --output json
+      register: validate_out
+      changed_when: false
+      failed_when: validate_out.rc != 0
+
+    - name: Deploy Bicep(resource group scope)
+      ansible.builtin.command: >
+        az deployment group create
+        --resource-group {{ resource_group }}
+        --template-file {{ bicep_file }}
+        --parameters 
+          location={{ location }} 
+          name={{ storage_account_name }} 
+          container_name={{ container_name }} 
+        --output json
+      register: deployment_result
+      failed_when: deployment_result.rc != 0
+
+    - name: Output Deployment Result
+      debug:
+        var: deployment_result

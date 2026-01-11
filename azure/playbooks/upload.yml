@@ -1,0 +1,80 @@
+---
+- name: Build Vite App and Upload to Azure Blob Storage
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    container_name: "$web"
+    storage_account_name: "mabroukresumechallenge09"
+    project_root: "{{ playbook_dir | realpath }}/../.."
+    frontend_dir: "{{ project_root }}/frontend"
+    build_dir: "{{ frontend_dir }}/dist"
+    resource_group: "cloud-resume-challenge"
+  #vars_files:
+  #  - vaults/prod.yml
+
+  tasks:
+    - name: Install Node dependencies (clean, reproducible)
+      community.general.npm:
+        path: "{{ frontend_dir }}"
+        state: present
+        production: false
+        ci: true
+
+    - name: Build Vite app
+      ansible.builtin.shell: npm run build_azure
+      args:
+        chdir: "{{ frontend_dir }}"
+
+    - name: Confirm build dir exists
+      ansible.builtin.stat:
+        path: "{{ build_dir }}"
+      register: build_stat
+
+    - name: Fail if build output missing
+      ansible.builtin.fail:
+        msg: "Build dir {{ build_dir }} not found. Check build step or paths."
+      when: not build_stat.stat.exists
+
+    # Upload static assets with cache headers
+    - name: Upload static assets (with long cache-control)
+      ansible.builtin.shell: |
+        az storage blob upload-batch \
+          --account-name {{ storage_account_name }} \
+          --auth-mode key \
+          --destination '{{ container_name }}' \
+          --source {{ build_dir }}/assets \
+          --destination-path assets \
+          --pattern "*" \
+          --content-cache-control "public, max-age=31536000, immutable" \
+          --overwrite true
+      when: build_stat.stat.exists
+
+    # Upload index.html with no-cache
+    - name: Upload index.html with no-store (SPA routing)
+      ansible.builtin.shell: |
+        az storage blob upload \
+          --account-name {{ storage_account_name }} \
+          --auth-mode key \
+          --container-name '{{ container_name }}' \
+          --name index.html \
+          --file {{ build_dir }}/index.html \
+          --content-cache-control "no-cache, no-store, must-revalidate" \
+          --content-type "text/html" \
+          --overwrite true
+
+    # Upload remaining files
+    - name: Upload remaining top-level files (short cache)
+      ansible.builtin.shell: |
+        cd {{ build_dir }}
+        for file in $(find . -maxdepth 1 -type f ! -name 'index.html'); do
+          filename=$(basename "$file")
+          az storage blob upload \
+            --account-name {{ storage_account_name }} \
+            --auth-mode key \
+            --container-name '{{ container_name }}' \
+            --name "$filename" \
+            --file "$file" \
+            --content-cache-control "public, max-age=3600" \
+            --overwrite true
+        done
