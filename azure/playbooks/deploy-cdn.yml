@@ -1,0 +1,94 @@
+---
+- name: Deploy CDN/Front Door via Bicep
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - azure.azcollection
+  vars:
+    resource_group: cloud-resume-challenge
+    location: eastus
+    storage_account_name: mabroukresumechallenge09
+    bicep_file: "{{ playbook_dir }}/../cdn.bicep"
+    deployment_name: "cdn-deploy"
+    dns_zone_rg: cloud-resume-challenge
+    dns_zone_name: mabrouk-engineering.com
+    domain_fqdn: www.mabrouk-engineering.com
+    apex_fqdn: mabrouk-engineering.com
+
+  tasks:
+    - name: Debug Variables
+      ansible.builtin.debug:
+        msg:
+          - "Resource Group: {{ resource_group }}"
+          - "Location: {{ location }}"
+          - "Storage Account Name: {{ storage_account_name }}"
+          - "DNS Zone: {{ dns_zone_name }}"
+          - "Domain FQDN: {{ domain_fqdn }}"
+
+    - name: Verify Azure CLI login
+      ansible.builtin.command: az account show
+      register: az_account
+      changed_when: false
+      failed_when: az_account.rc != 0
+
+    - name: Get Storage Account Static Website Endpoint
+      ansible.builtin.command: >
+        az storage account show
+          --name {{ storage_account_name }}
+          --resource-group {{ resource_group }}
+          --query "primaryEndpoints.web"
+          --output tsv
+      register: storage_endpoint
+      changed_when: false
+      failed_when: storage_endpoint.rc != 0
+
+    - name: Display Storage Endpoint (for CDN origin)
+      ansible.builtin.debug:
+        msg: "Using Storage Endpoint: {{ storage_endpoint.stdout }}"
+
+    - name: Validate CDN Bicep template
+      ansible.builtin.command: >
+        az deployment group validate
+          --resource-group {{ resource_group }}
+          --template-file {{ bicep_file }}
+          --parameters 
+            location={{ location }}
+            name={{ storage_account_name }}
+            dns_zone_rg={{ dns_zone_rg }}
+            dns_zone_name={{ dns_zone_name }}
+            domain_fqdn={{ domain_fqdn }}
+            apex_fqdn={{ apex_fqdn }}
+            storageEndpoint={{ storage_endpoint.stdout }}
+          --output json
+      register: validate_out
+      changed_when: false
+      failed_when: validate_out.rc != 0
+
+    - name: Deploy CDN/Front Door Bicep
+      ansible.builtin.command: >
+        az deployment group create
+          --resource-group {{ resource_group }}
+          --template-file {{ bicep_file }}
+          --parameters 
+            location={{ location }}
+            name={{ storage_account_name }}
+            dns_zone_rg={{ dns_zone_rg }}
+            dns_zone_name={{ dns_zone_name }}
+            domain_fqdn={{ domain_fqdn }}
+            apex_fqdn={{ apex_fqdn }}
+            storageEndpoint={{ storage_endpoint.stdout }}
+          --output json
+      register: deployment_result
+      failed_when: deployment_result.rc != 0
+
+    - name: Output CDN Deployment Result
+      ansible.builtin.debug:
+        var: deployment_result.stdout
+
+    - name: Display Next Steps
+      ansible.builtin.debug:
+        msg:
+          - "CDN/Front Door deployment complete!"
+          - "Your site should be available at: https://{{ domain_fqdn }}"
+          - "Note: DNS propagation may take a few minutes"

@@ -1,0 +1,180 @@
+---
+- name: Deploy Storage Account via Bicep
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - azure.azcollection
+  vars:
+    resource_group: cloud-resume-challenge
+    location: eastus
+    storage_account_name: mabroukresumechallenge09
+    bicep_file: "{{ playbook_dir }}/../storage.bicep"
+    deployment_name: "storage-deploy"
+
+  tasks:
+    - name: Debug Variables
+      ansible.builtin.debug:
+        msg:
+          - "Resource Group: {{ resource_group }}"
+          - "Location: {{ location }}"
+          - "Storage Account Name: {{ storage_account_name }}"
+
+    - name: Verify Azure CLI login
+      ansible.builtin.command: az account show
+      register: az_account
+      changed_when: false
+      failed_when: az_account.rc != 0
+
+    - name: Validate Storage Bicep template
+      ansible.builtin.command: >
+        az deployment group validate
+          --resource-group {{ resource_group }}
+          --template-file {{ bicep_file }}
+          --parameters 
+            location={{ location }} 
+            name={{ storage_account_name }}
+          --output json
+      register: validate_out
+      changed_when: false
+      failed_when: validate_out.rc != 0
+
+    - name: Deploy Storage Account Bicep
+      ansible.builtin.command: >
+        az deployment group create
+          --resource-group {{ resource_group }}
+          --template-file {{ bicep_file }}
+          --parameters 
+            location={{ location }} 
+            name={{ storage_account_name }}
+          --output json
+      register: deployment_result
+      failed_when: deployment_result.rc != 0
+
+    - name: Output Storage Deployment Result
+      ansible.builtin.debug:
+        var: deployment_result.stdout
+
+    - name: Configure Storage Account Network Rules (Allow Public Access)
+      ansible.builtin.command: >
+        az storage account update
+          --name {{ storage_account_name }}
+          --resource-group {{ resource_group }}
+          --default-action Allow
+          --bypass AzureServices
+          --public-network-access Enabled
+      register: network_rules
+      changed_when: network_rules.rc == 0
+      failed_when: network_rules.rc != 0
+
+    - name: Enable Blob Public Access
+      ansible.builtin.command: >
+        az storage account update
+          --name {{ storage_account_name }}
+          --resource-group {{ resource_group }}
+          --allow-blob-public-access true
+      register: blob_access
+      changed_when: blob_access.rc == 0
+      failed_when: blob_access.rc != 0
+
+    - name: Configure CORS for Storage Account
+      ansible.builtin.command: >
+        az storage cors add
+          --services b
+          --methods GET HEAD OPTIONS
+          --origins '*'
+          --allowed-headers '*'
+          --exposed-headers '*'
+          --max-age 3600
+          --account-name {{ storage_account_name }}
+      register: cors_result
+      changed_when: cors_result.rc == 0
+      ignore_errors: yes
+
+    - name: Enable Static Website on Storage Account
+      ansible.builtin.command: >
+        az storage blob service-properties update
+          --account-name {{ storage_account_name }}
+          --static-website
+          --404-document 404.html
+          --index-document index.html
+      register: static_website_result
+      changed_when: static_website_result.rc == 0
+      failed_when: static_website_result.rc != 0
+
+    - name: Wait for static website to be fully enabled
+      ansible.builtin.pause:
+        seconds: 10
+
+    - name: Get Storage Account Static Website Endpoint
+      ansible.builtin.command: >
+        az storage account show
+          --name {{ storage_account_name }}
+          --resource-group {{ resource_group }}
+          --query "primaryEndpoints.web"
+          --output tsv
+      register: storage_endpoint
+      changed_when: false
+      retries: 3
+      delay: 5
+      until: storage_endpoint.stdout != ""
+
+    - name: Display Storage Endpoint
+      ansible.builtin.debug:
+        msg: "Storage Static Website Endpoint: {{ storage_endpoint.stdout }}"
+
+    - name: Create $web container (automatically created by static website)
+      ansible.builtin.debug:
+        msg: "$web container created automatically when static website is enabled"
+
+    - name: Create additional containers
+      ansible.builtin.command: >
+        az storage container create
+          --name {{ item }}
+          --account-name {{ storage_account_name }}
+          --public-access off
+      register: container_result
+      changed_when: "'already exists' not in container_result.stderr"
+      failed_when: container_result.rc != 0 and 'already exists' not in container_result.stderr
+
+    - name: Upload test index.html to $web container
+      ansible.builtin.command: >
+        az storage blob upload
+          --account-name {{ storage_account_name }}
+          --container-name $web
+          --name index.html
+          --file {{ playbook_dir }}/../web/index.html
+          --overwrite
+      register: upload_result
+      changed_when: upload_result.rc == 0
+      ignore_errors: yes
+
+    - name: Verify static website is accessible
+      ansible.builtin.uri:
+        url: "{{ storage_endpoint.stdout }}"
+        return_content: yes
+        status_code: [200, 404]
+      register: website_check
+      retries: 3
+      delay: 5
+      ignore_errors: yes
+
+    - name: Display Static Website Configuration
+      ansible.builtin.debug:
+        msg:
+          - "Static Website enabled successfully!"
+          - "Index document: index.html"
+          - "Error document: 404.html"
+          - "Website URL: {{ storage_endpoint.stdout }}"
+          - "Containers created: $web (static content)"
+          - "Website Status: {{ 'Accessible' if website_check.status == 200 else 'Not yet accessible (upload content to $web container)' }}"
+
+    - name: Troubleshooting Info
+      ansible.builtin.debug:
+        msg:
+          - "If you see 'Network request failed', try these steps:"
+          - "1. Verify static website is enabled: az storage blob service-properties show --account-name {{ storage_account_name }} --query staticWebsite"
+          - "2. Upload content to $web container: az storage blob upload --account-name {{ storage_account_name }} --container-name $web --name index.html --file ./index.html"
+          - "3. Check firewall rules: Make sure your storage account allows public access"
+          - "4. Wait a few minutes for DNS propagation"
+      when: website_check.status != 200
